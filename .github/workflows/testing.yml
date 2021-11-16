@@ -1,0 +1,11 @@
+name: Test Workflow
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  print-event-location:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo $GITHUB_EVENT_PATH
