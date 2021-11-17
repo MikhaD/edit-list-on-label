@@ -5,14 +5,16 @@ on:
   issues:
     types:
       - labeled     #checked
-      - reopened
-      - unlabeled
-      - closed
-      - deleted
-      - 
+      - reopened    #checked
+      - unlabeled   #checked
+      - closed      #checked
+      - deleted     #checked
 
 jobs:
   print-event:
     runs-on: ubuntu-latest
     steps:
-      - run: cd /home/runner/work/_temp/_github_workflow && cat event.json
+      - if: github.event.label
+        run: echo ${{ github.event.label.name }}:${{ github.event.label.description }}
+      - if: !github.event.label
+        run: echo ${{ github.event.issue.labels.length }}
