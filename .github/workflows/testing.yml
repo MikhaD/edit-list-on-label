@@ -2,21 +2,13 @@ name: Test Workflow
 
 on:
   workflow_dispatch:
-  issues:
-    types:
-      - labeled     #checked
-      - reopened    #checked
-      - unlabeled   #checked
-      - closed      #checked
-      - deleted     #checked
+  push:
 
 jobs:
   print-event:
     runs-on: ubuntu-latest
     steps:
-      - name: label event
-        if: github.event.label
+      - name: meant to fail
         run: echo ${{ github.event.label.name }}:${{ github.event.label.description }}
-      - name: non label event
-        if: "!github.event.label"
-        run: "echo ${{ contains(toJSON(github.event.issue.labels), '\"name\": \"bug\"') }}"
+      - name: will I run?
+        run: echo "if this prints it ran after the previous step failed"
