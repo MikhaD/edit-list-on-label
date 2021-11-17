@@ -14,7 +14,9 @@ jobs:
   print-event:
     runs-on: ubuntu-latest
     steps:
-      - if: github.event.label
+      - name: label event
+        if: github.event.label
         run: echo ${{ github.event.label.name }}:${{ github.event.label.description }}
-      - if: "!github.event.label"
-        run: echo ${{ github.event.issue.labels.length }}
+      - name: non label event
+        if: "!github.event.label"
+        run: echo ${{ join(github.event.issue.labels) }}
