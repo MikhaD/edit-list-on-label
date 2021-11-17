@@ -19,4 +19,4 @@ jobs:
         run: echo ${{ github.event.label.name }}:${{ github.event.label.description }}
       - name: non label event
         if: "!github.event.label"
-        run: echo ${{ contains(toJSON(github.event.issue.labels), '"name":"bug"') }}
+        run: echo ${{ contains(toJSON(github.event.issue.labels), 'bug') }}
