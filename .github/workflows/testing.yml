@@ -3,6 +3,10 @@ name: Test Workflow
 on:
   push:
   workflow_dispatch:
+  issues:
+    types:
+      - labeled
+      - reopened
 
 jobs:
   print-event:
