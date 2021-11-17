@@ -5,7 +5,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  print-event-location:
+  print-event:
     runs-on: ubuntu-latest
     steps:
-      - run: echo $GITHUB_EVENT_PATH
+      - run: |
+      cd $GITHUB_EVENT_PATH
+      cat event.json
