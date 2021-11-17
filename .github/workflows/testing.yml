@@ -1,12 +1,15 @@
 name: Test Workflow
 
 on:
-  push:
   workflow_dispatch:
   issues:
     types:
-      - labeled
+      - labeled     #checked
       - reopened
+      - unlabeled
+      - closed
+      - deleted
+      - 
 
 jobs:
   print-event:
