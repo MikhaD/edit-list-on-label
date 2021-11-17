@@ -8,4 +8,4 @@ jobs:
   print-event:
     runs-on: ubuntu-latest
     steps:
-      - run: cd $GITHUB_EVENT_PATH && cat event.json
+      - run: cd /home/runner/work/_temp/_github_workflow && cat event.json
