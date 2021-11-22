@@ -1,6 +1,7 @@
 name: Update Website Via SSH
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
@@ -15,7 +16,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
         REMOTE_HOST: peacediscipline.com
         REMOTE_USER: peaceine
-        ARGS: -rltgoDzvO --filter='-r_filter_test' --delete
+        ARGS: -rltgoDzvO --filter='-r_filter_test' --filter='-r_/test3' --delete
         SOURCE: dist/
         TARGET: ~/backup
 
