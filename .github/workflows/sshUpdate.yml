@@ -5,9 +5,9 @@ on:
 
 jobs:
   ssh-deploy:
-  runs-on: ubuntu-latest
-  steps:
-  - name: Checkout
-    uses: actions/checkout@v2
-  - name: Create dummy files
-    run: ls
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Create dummy files
+      run: ls
