@@ -15,7 +15,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
         REMOTE_HOST: peacediscipline.com
         REMOTE_USER: peaceine
-        ARGS: -rltgoDzvO --delete
+        ARGS: -rltgoDzvO --filter='-r_filter_test' --delete
         SOURCE: dist/
         TARGET: ~/backup
 
