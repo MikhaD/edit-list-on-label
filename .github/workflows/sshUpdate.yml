@@ -1,0 +1,13 @@
+name: Update Website Via SSH
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-deploy:
+  runs-on: ubuntu-latest
+  steps:
+  - name: Checkout
+    uses: actions/checkout@v2
+  - name: Create dummy files
+    run: ls
