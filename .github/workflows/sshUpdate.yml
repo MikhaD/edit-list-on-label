@@ -9,5 +9,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Create dummy files
-      run: ls
+    - name: Create dummy file
+      run: |
+        ls -al
+        mkdir dist
+        touch dist/test_file.txt
+        ls -al
+    - name: Deploy with SSH
+      uses: easingthemes/ssh-deploy@v2
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        REMOTE_HOST: peacediscipline.com
+        REMOTE_USER: peaceine
+        SOURCE: dist/
