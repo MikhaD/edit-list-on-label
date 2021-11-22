@@ -15,5 +15,19 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
         REMOTE_HOST: peacediscipline.com
         REMOTE_USER: peaceine
+        ARGS: -rltgoDzvO --delete
         SOURCE: dist/
         TARGET: ~/backup
+
+# -rltgoDzvO
+# r   Recurse into directories
+# l   Copy symlinks as symlinks
+# t   Preserve times
+# g   Preserve group
+# o   Preserve owner (super-user only)
+# D   Preserve devices (super-user only) +files
+# z   Compress file data during the transfer
+# v   Increase verbosity
+# O   ?
+
+# --delete    Delete files that don't exist on the sending side
