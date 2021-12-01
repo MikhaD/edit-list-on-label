@@ -1,0 +1,11 @@
+name: Edit Readme
+
+description: Starter action for editing README
+
+outputs:
+  testi:
+    description: test output to see whether output needs to be specified in the action.yml
+
+runs:
+  using: node12
+  main: dist/index.js

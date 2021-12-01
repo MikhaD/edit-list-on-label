@@ -1,0 +1,28 @@
+{
+  "name": "edit-readme",
+  "version": "0.0.0",
+  "description": "A GitHub action to edit a repositories README file.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "npx ncc src/index.ts --minify --license licenses.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikhaD/edit-readme.git"
+  },
+  "keywords": [],
+  "author": "MikhaD",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MikhaD/edit-readme/issues"
+  },
+  "homepage": "https://github.com/MikhaD/edit-readme#readme",
+  "dependencies": {
+    "@actions/core": "^1.6.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.32.0",
+    "typescript": "^4.5.2"
+  }
+}

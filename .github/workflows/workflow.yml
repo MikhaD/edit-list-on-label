@@ -1,0 +1,17 @@
+name: Test action features
+
+on:
+  workflow_dispatch:
+
+jobs:
+  experiment-with-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: my action
+        uses: ./
+        id: maction
+
+      - name: consume output
+        run: echo "output is ${{ steps.maction.outputs.testi }}"
