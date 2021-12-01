@@ -14,4 +14,4 @@ jobs:
         id: maction
 
       - name: consume output
-        run: echo "output is ${{ steps.maction.outputs.testi }}"
+        run: echo "output is ${{ steps.maction.outputs.testj }}"
