@@ -1,10 +1,15 @@
 name: Edit Readme
-
+author: MikhaD
 description: Starter action for editing README
 
-# outputs:
-#   testi:
-#     description: test output to see whether output needs to be specified in the action.yml
+inputs:
+  section:
+    description: The heading in the readme that you want to edit. If not present in the readme it will be appended to the end.
+    required: true
+  case-sensitive:
+    description: Whether you want the section to be case sensitive, false by default.
+    required: false
+    default: false
 
 runs:
   using: node12
