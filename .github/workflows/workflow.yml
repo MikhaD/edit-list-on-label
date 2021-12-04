@@ -11,7 +11,5 @@ jobs:
 
       - name: my action
         uses: ./
-        id: maction
-
-      - name: consume output
-        run: echo "output is ${{ steps.maction.outputs.testj }}"
+        with:
+          section: Testing Section

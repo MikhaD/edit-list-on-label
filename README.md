@@ -23,18 +23,28 @@ If the first line is --- and so is the second they are both hrs
 if first is === and second is --- or === treat as heading
 
 # Cases:
+All of these cases need tests written for them
+
 --- under text:				Heading
 --- under ===:				Heading
 --- under === under text:	Not Heading
 --- under ---:				Not Heading
+--- under blank line		Not Heading
+--- at beginning			Not Heading
+
 
 === under text:				Heading
 === under ===:				Heading
 === under === under text:	Not Heading
 === under ---:				Not Heading
+=== under blank line		Not Heading
+=== at beginning			Not Heading
 
 no headings
 multiple identical headings (with and without case sensitivity on)
+\# type heading at the beginning of the file
+empty file
 
+(try to write tests for every branch)
 
 What if readme doesn't exist?

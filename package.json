@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.json",
-    "package": "npx ncc build src/index.ts --license licenses.txt"
+    "package": "npx ncc build src/index.ts --license licenses.txt",
+    "clean": "rm "
   },
   "repository": {
     "type": "git",
