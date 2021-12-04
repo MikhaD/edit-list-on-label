@@ -21,6 +21,7 @@ try {
 	const sections = sectionMarkdown(lines, caseSensitive);
 	console.log(sections);
 	console.log("##############################################");
+	console.log(section);
 	console.log(sections.get(section));
 } catch (e) {
 	console.log(e);

@@ -1623,6 +1623,7 @@ try {
     const sections = (0, sectionMarkdown_1.default)(lines, caseSensitive);
     console.log(sections);
     console.log("##############################################");
+    console.log(section);
     console.log(sections.get(section));
 }
 catch (e) {
