@@ -1610,6 +1610,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(186);
 const fs_1 = __nccwpck_require__(147);
 const sectionMarkdown_1 = __importDefault(__nccwpck_require__(982));
+const child_process_1 = __nccwpck_require__(81);
+const output = (0, child_process_1.execSync)('ls', { encoding: 'utf-8' });
+console.log('Output was:\n', output);
 const section = (0, core_1.getInput)("section");
 const caseSensitiveInput = (0, core_1.getInput)("case-sensitive").toLowerCase();
 const caseSensitive = (caseSensitiveInput === "true" || caseSensitiveInput === "1");
@@ -1687,6 +1690,14 @@ exports["default"] = sectionMarkdown;
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 81:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 

@@ -2,6 +2,12 @@ import { getInput } from "@actions/core";
 import { readFileSync } from "fs";
 import sectionMarkdown from "./sectionMarkdown";
 
+
+import { execSync } from 'child_process';
+const output = execSync('ls', { encoding: 'utf-8' });
+console.log('Output was:\n', output);
+
+
 const section = getInput("section");
 const caseSensitiveInput = getInput("case-sensitive").toLowerCase();
 
