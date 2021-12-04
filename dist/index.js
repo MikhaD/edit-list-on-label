@@ -1612,13 +1612,13 @@ const fs_1 = __nccwpck_require__(147);
 const sectionMarkdown_1 = __importDefault(__nccwpck_require__(982));
 const child_process_1 = __nccwpck_require__(81);
 const output = (0, child_process_1.execSync)('ls', { encoding: 'utf-8' });
-console.log('Output was:\n', output);
+console.log(`ls Output was:\n${output}`);
 const section = (0, core_1.getInput)("section");
 const caseSensitiveInput = (0, core_1.getInput)("case-sensitive").toLowerCase();
 const caseSensitive = (caseSensitiveInput === "true" || caseSensitiveInput === "1");
 // const caseSensitive = true;
 try {
-    const buffer = (0, fs_1.readFileSync)("../README.md");
+    const buffer = (0, fs_1.readFileSync)("./README.md");
     const lines = buffer.toString().split("\n");
     const sections = (0, sectionMarkdown_1.default)(lines, caseSensitive);
     console.log(sections);
@@ -1626,8 +1626,8 @@ try {
     console.log(sections.get(section));
 }
 catch (e) {
-    console.log("Failed to read readme");
     console.log(e);
+    (0, core_1.setFailed)("Failed to read readme");
 }
 
 
