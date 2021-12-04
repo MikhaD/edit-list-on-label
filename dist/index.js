@@ -1613,18 +1613,15 @@ const sectionMarkdown_1 = __importDefault(__nccwpck_require__(982));
 const child_process_1 = __nccwpck_require__(81);
 const output = (0, child_process_1.execSync)('ls', { encoding: 'utf-8' });
 console.log(`ls Output was:\n${output}`);
-const section = (0, core_1.getInput)("section");
 const caseSensitiveInput = (0, core_1.getInput)("case-sensitive").toLowerCase();
 const caseSensitive = (caseSensitiveInput === "true" || caseSensitiveInput === "1");
 // const caseSensitive = true;
+const section = caseSensitive ? (0, core_1.getInput)("section") : (0, core_1.getInput)("section").toLowerCase();
 try {
     const buffer = (0, fs_1.readFileSync)("./README.md");
     const lines = buffer.toString().split("\n");
     const sections = (0, sectionMarkdown_1.default)(lines, caseSensitive);
     console.log(sections);
-    console.log("##############################################");
-    console.log(section);
-    console.log(sections.get(section));
 }
 catch (e) {
     console.log(e);

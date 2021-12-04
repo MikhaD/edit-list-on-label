@@ -28,6 +28,30 @@ export default class Section {
 	setHeading(heading: string, caseSensitive?: boolean) {
 		heading = caseSensitive ? heading : heading.toLowerCase();
 		// trim heading then remove preceding #s and whitespace
-		this.heading = heading.trim().replace(/^#+\s+/m, "");;
+		this.heading = heading.trim().replace(/^#+\s+/m, "");
+	}
+	/**
+	 * Add to the last list found in the section, or append to the end of the section if no list is found
+	 * @param value The value you want to add to the list.
+	 */
+	addToList(value: string) {
+		for (let i = this.lines.length - 1; i >= this.headingType; --i) {
+			if (/^(-|\+|\*)\s+/m.test(this._lines[i])) {
+				this._lines.splice(i + 1, 0, `- ${value}`);
+			}
+		}
+	}
+	/**
+	 * Remove the item from the last list found in the section and return 0, or return 1 if item could not be found
+	 * @param value The value you want to remove from the list
+	 */
+	removeFromList(value: string) {
+		for (let i = this.lines.length - 1; i >= this.headingType; --i) {
+			if (/^(-|\+|\*)\s+/m.test(this._lines[i])) {
+				if (this._lines[i].includes(value)) {
+					this._lines.splice(i, 1);
+				}
+			}
+		}
 	}
 }

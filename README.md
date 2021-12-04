@@ -48,3 +48,5 @@ empty file
 (try to write tests for every branch)
 
 What if readme doesn't exist?
+
+Need an action to be triggered on issue rename if issue is labeled with the relevant label.
