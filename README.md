@@ -50,3 +50,9 @@ empty file
 What if readme doesn't exist?
 
 Need an action to be triggered on issue rename if issue is labeled with the relevant label.
+
+# To Do
+Refactor sectionMarkdown to use an array as a temp instead of a section
+Refactor Section to take an array instead of being able to add lines/ pop last line
+Refactor Section to return the total length of the section, if you want the length - heading you need to do that manually.
+Return a list of ordered lists of Sections from sectionMarkdown. Edit highest level one

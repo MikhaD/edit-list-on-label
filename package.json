@@ -4,7 +4,7 @@
   "description": "A GitHub action to edit a repositories README file.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc -p tsconfig.json",
     "package": "npx ncc build src/index.ts --license licenses.txt",
     "clean": "rm "
@@ -24,8 +24,19 @@
     "@actions/core": "^1.6.0"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.3",
     "@types/node": "^16.11.11",
     "@vercel/ncc": "^0.32.0",
+    "jest": "^27.4.3",
+    "ts-jest": "^27.0.7",
     "typescript": "^4.5.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "verbose": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/*.ts"
+    ]
   }
 }
