@@ -1,4 +1,4 @@
-import { Heading } from "../src/enums";
+import { HeadingType } from "../src/types";
 import { isDashLine, isEqualsLine, isHashHeading, sectionMarkdown } from "../src/parseMarkdown";
 import Section from "../src/Section";
 
@@ -58,7 +58,7 @@ describe("No headings", () => {
 		expect(output.size).toBe(1);
 		expect(output.get("")).toBeDefined();
 		expect(output.get("")?.lineCount()).toBe(3);
-		expect(output.get("")?.headingType).toBe(Heading.none);
+		expect(output.get("")?.headingType).toBe(HeadingType.none);
 	});
 });
 
@@ -76,7 +76,7 @@ describe("Hash heading first line", () => {
 		expect(output.size).toBe(1);
 		expect(output.get(heading)).toBeDefined();
 		expect(output.get(heading)?.lineCount()).toBe(3);
-		expect(output.get(heading)?.headingType).toBe(Heading.hash);
+		expect(output.get(heading)?.headingType).toBe(HeadingType.hash);
 	});
 });
 
@@ -96,11 +96,11 @@ describe("Hash heading not first line", () => {
 
 		expect(output.get("")).toBeDefined();
 		expect(output.get("")?.lineCount()).toBe(1);
-		expect(output.get("")?.headingType).toBe(Heading.none);
+		expect(output.get("")?.headingType).toBe(HeadingType.none);
 
 		expect(output.get(heading)).toBeDefined();
 		expect(output.get(heading)?.lineCount()).toBe(3);
-		expect(output.get(heading)?.headingType).toBe(Heading.hash);
+		expect(output.get(heading)?.headingType).toBe(HeadingType.hash);
 	});
 });
 
@@ -120,11 +120,11 @@ describe("Heading same as another", () => {
 		expect(output.size).toBe(3);
 		expect(output.get("Heading")).toBeDefined();
 		expect(output.get("Heading")?.lineCount()).toBe(1);
-		expect(output.get("Heading")?.headingType).toBe(Heading.underline);
+		expect(output.get("Heading")?.headingType).toBe(HeadingType.underline);
 
 		expect(output.get("heading")).toBeDefined();
 		expect(output.get("heading")?.lineCount()).toBe(3);
-		expect(output.get("heading")?.headingType).toBe(Heading.hash);
+		expect(output.get("heading")?.headingType).toBe(HeadingType.hash);
 	});
 
 	test("caseSensitive false", () => {
@@ -132,7 +132,7 @@ describe("Heading same as another", () => {
 		expect(output.size).toBe(2);
 		expect("heading").toBeDefined();
 		expect(output.get("heading")?.lineCount()).toBe(1);
-		expect(output.get("heading")?.headingType).toBe(Heading.underline);
+		expect(output.get("heading")?.headingType).toBe(HeadingType.underline);
 
 		expect(output.get("Heading")).toBeUndefined();
 	});
@@ -154,7 +154,7 @@ for (const underline of ["----", "===="]) {
 			expect(output.size).toBe(1);
 			expect(output.get(heading)).toBeDefined();
 			expect(output.get(heading)?.lineCount()).toBe(3);
-			expect(output.get(heading)?.headingType).toBe(Heading.underline);
+			expect(output.get(heading)?.headingType).toBe(HeadingType.underline);
 		});
 	});
 }

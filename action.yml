@@ -1,15 +1,20 @@
 name: Edit Readme
 author: MikhaD
-description: Starter action for editing README
+description: Add/remove issue titles to/from a list in your README when a label is added/removed.
 
 inputs:
-  section:
-    description: The heading in the readme that you want to edit. If not present in the readme it will be appended to the end.
+  label:
+    description: The label you want the event to trigger on. The default is enhancement.
     required: true
+    default: enhancement
+  heading:
+    description: The heading in the README that you want to edit. If not present in the README it will be appended to the end.
+    required: true
+    default: Upcoming Features
   case-sensitive:
-    description: Whether you want the section to be case sensitive, false by default.
+    description: Whether you want the heading to be case sensitive, true by default.
     required: false
-    default: false
+    default: true
 
 runs:
   using: node16

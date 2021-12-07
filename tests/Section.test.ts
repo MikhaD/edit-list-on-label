@@ -1,4 +1,4 @@
-import { Heading } from "../src/enums";
+import { HeadingType } from "../src/types";
 import Section from "../src/Section";
 
 describe("Match list item regex", () => {
@@ -23,7 +23,7 @@ test("Basic constructor", () => {
 	const section = new Section();
 	expect(section.getHeading()).toBe("");
 	expect(section.getHeading(false)).toBe("");
-	expect(section.headingType).toBe(Heading.none);
+	expect(section.headingType).toBe(HeadingType.none);
 	expect(section.lineCount()).toBe(0);
 	expect(section.lastLine()).toBe("");
 	expect(section.getText()).toEqual([]);
@@ -37,14 +37,14 @@ test("Simple section", () => {
 		"of text with a",
 		"heading."
 	];
-	const section = new Section("# Heading", Heading.hash);
+	const section = new Section("# Heading", HeadingType.hash);
 	for (const line of text) {
 		section.addLine(line);
 	}
 
 	expect(section.getHeading()).toBe("Heading");
 	expect(section.getHeading(false)).toBe("heading");
-	expect(section.headingType).toBe(Heading.hash);
+	expect(section.headingType).toBe(HeadingType.hash);
 	expect(section.lineCount()).toBe(3);
 	expect(section.lastLine()).toBe("heading.");
 	expect(section.getText()).toEqual(text);
@@ -59,7 +59,7 @@ describe("Add to list", () => {
 			"of text with a",
 			"heading."
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}
@@ -75,7 +75,7 @@ describe("Add to list", () => {
 			"- New Item!",
 			"last line"
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}
@@ -101,7 +101,7 @@ describe("Add to list", () => {
 			"* Second list",
 			"last line"
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}
@@ -128,7 +128,7 @@ describe("Remove from list", () => {
 			"of text with a",
 			"heading."
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}
@@ -143,7 +143,7 @@ describe("Remove from list", () => {
 			"heading.",
 			"- list item"
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}
@@ -159,7 +159,7 @@ describe("Remove from list", () => {
 			"- list item",
 			"- second list item"
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}
@@ -183,7 +183,7 @@ describe("Remove from list", () => {
 			"+ list item",
 			"+ second list item"
 		];
-		const section = new Section("# Heading", Heading.hash);
+		const section = new Section("# Heading", HeadingType.hash);
 		for (const line of text) {
 			section.addLine(line);
 		}

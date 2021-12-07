@@ -1,34 +1,44 @@
 import { getInput, setFailed } from "@actions/core";
-import { readFileSync } from "fs";
-import { sectionMarkdown } from "./parseMarkdown";
+import github from "@actions/github";
+import { IssuesEvent } from "@octokit/webhooks-definitions/schema"
+import MDFile from "./MDFile";
+import { containsLabel } from "./utils";
 
+const caseSensitive = (() => {
+	const caseSensitive = getInput("case-sensitive").toLowerCase();
+	return !(caseSensitive === "false" || caseSensitive === "0");
+})();
 
-import { execSync } from 'child_process';
-import { exit } from "process";
-const output = execSync('ls', { encoding: 'utf-8' });
-console.log(`ls Output was:\n${output}`);
-
-
-const caseSensitiveInput = getInput("case-sensitive").toLowerCase();
-const caseSensitive = (caseSensitiveInput === "true" || caseSensitiveInput === "1");
-// const caseSensitive = true;
-
-const section = caseSensitive ? getInput("section") : getInput("section").toLowerCase();
+const sectionName = caseSensitive ? getInput("heading") : getInput("heading").toLowerCase();
+const labelName = getInput("label");
 
 try {
-	const buffer = readFileSync("./README.md");
-	const lines = buffer.toString().split("\n");
+	const readme = new MDFile("./README.md");
+	const event = github.context.payload as IssuesEvent;
+	const text = `(#${event.issue.number}) ${event.issue.title}`;
 
-	const sections = sectionMarkdown(lines, caseSensitive);
-	console.log(sections);
+	const issueEventRelatedToLabel = (event.issue.labels && containsLabel(event.issue.labels, labelName)) ||
+		("label" in event && event.label?.name === labelName);
 
-	const relsec = sections.get(section);
-	if (relsec === undefined) {
-		setFailed("Specified section does not exist");
-		exit();
+	if (issueEventRelatedToLabel) {
+		if (["labeled", "reopened"].includes(event.action)) {
+			readme.addToList(sectionName, text);
+		} else if (["unlabeled", "closed", "deleted"].includes(event.action)) {
+			const status = readme.removeFromList(sectionName, text);
+			if (status !== 0) {
+				setFailed(`Failed to remove issue #${event.issue.number} from ${sectionName}`);
+			}
+		} else if (event.action === "edited" && (event.changes.title && event.changes.title.from !== event.issue.title)) {
+			const oldListItem = `(#${event.issue.number}) ${event.changes.title.from}`;
+			const status = readme.editListItem(sectionName, oldListItem, text);
+			if (status !== 0) {
+				setFailed(`Failed to edit issue #${event.issue.number} in ${sectionName}`);
+			}
+		} else {
+			// exit and reflect that nothing was done in the action output
+		}
+		// edit the actual readme by writing readme.toString() to file and committing it
 	}
-
 } catch (e) {
 	setFailed("Failed, see error");
-	console.log(e);
 }
