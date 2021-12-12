@@ -80,7 +80,7 @@ describe("initializeGit", () => {
 		expect(initializeGit()).toBeUndefined();
 		expect(execSyncMock).toBeCalledTimes(2);
 		expect(execSyncMock).toBeCalledWith("git config --global user.email action@github.com");
-		expect(execSyncMock).toBeCalledWith("git config --global user.name action");
+		expect(execSyncMock).toBeCalledWith("git config --global user.name actions-user");
 	});
 	test("Valid parameters", () => {
 		expect(initializeGit("bob@bob.bob", "bob")).toBeUndefined();

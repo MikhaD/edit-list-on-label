@@ -31,7 +31,7 @@ export function containsLabel(labels: Label[], labelName: string) {
  * @param email default: `action@github.com`
  * @param name default: `action`
  */
-export function initializeGit(email = "action@github.com", name = "action") {
+export function initializeGit(email = "action@github.com", name = "actions-user") {
 	if (!EMAIL_REGEX.test(email)) throw new SyntaxError("Invalid email syntax");
 	execSync(`git config --global user.email ${email}`);
 	execSync(`git config --global user.name ${name}`);

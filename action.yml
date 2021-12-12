@@ -1,26 +1,19 @@
-name: Edit Readme
+name: Edit List on Label
 author: MikhaD
-description: Add/remove issue titles to/from a list in your README when a label is added/removed.
+description: Add/remove issue titles to/from a list in your README and/or any other markdown files in your repo when a label is added/removed.
 
 inputs:
-  # auth-token:
-  #   description: Github token to give the action permission to modify the repository (secrets.GITHUB_TOKEN)
-  #   required: true
   files:
     description: A comma seperated list of the relative paths to the files you want to modify, ./README.md by default
-    required: true
     default: ./README.md
   label:
     description: The label you want the event to trigger on. The default is enhancement.
-    required: true
     default: enhancement
   heading:
     description: The heading in the README that you want to edit. If not present in the README it will be appended to the end.
-    required: true
     default: Upcoming Features
   case-sensitive:
     description: Whether you want the heading to be case sensitive, true by default.
-    required: false
     default: true
 
 runs:

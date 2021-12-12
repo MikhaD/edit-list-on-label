@@ -1,13 +1,12 @@
 {
   "name": "edit-readme",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A GitHub action to edit a repositories README file.",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.json",
-    "package": "npx ncc build src/index.ts --minify --license licenses.txt",
-    "clean": "rm "
+    "package": "npx ncc build src/index.ts --minify --license licenses.txt"
   },
   "repository": {
     "type": "git",
@@ -36,6 +35,9 @@
   "jest": {
     "preset": "ts-jest",
     "verbose": true,
-    "collectCoverage": true
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/*.ts"
+    ]
   }
 }
