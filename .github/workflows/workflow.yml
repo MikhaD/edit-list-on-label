@@ -1,7 +1,6 @@
 name: Test action features
 
-on:
-  workflow_dispatch:
+on: issues
 
 jobs:
   experiment-with-action:

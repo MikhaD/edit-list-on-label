@@ -1,4 +1,4 @@
-import { Heading, headingLevel, HeadingType } from "./types"
+import { Heading, headingLevel, HeadingType } from "./types";
 
 /**
  * A Section represents a markdown block between two headings,
@@ -18,22 +18,21 @@ export default class Section {
 			throw new Error("Cannot have underline heading with only one line");
 		}
 
-		this._lines = lines;
-		Object.freeze(this._lines);
+		this._lines = [...lines];
 
 		let level: headingLevel;
-		switch (headingType) {
-			case HeadingType.hash:
-				level = Section.getHashHeadingLevel(lines[0]);
-				break;
-			case HeadingType.underline:
-				if (Section.EQUALS_LINE.test(lines[1])) level = 1;
-				else if (Section.DASH_LINE.test(lines[1])) level = 2;
-				else throw new Error("Underline heading has missing or invalid underline");
-				break;
-			default:
-				level = 0;
+		const hashHeadingLevel = Section.getHashHeadingLevel(lines[0]);
+		if (headingType === HeadingType.underline) {
+			if (hashHeadingLevel !== 0) throw new Error("Incorrect heading type");
+			if (Section.DASH_LINE.test(lines[0])) throw new Error("Invalid heading");
+			if (Section.EQUALS_LINE.test(lines[1])) level = 1;
+			else if (Section.DASH_LINE.test(lines[1])) level = 2;
+			else throw new Error("Underline heading has missing or invalid underline");
+		} else {
+			level = hashHeadingLevel;
 		}
+		if (level === 0 && headingType !== HeadingType.none) throw new Error("Invalid heading");
+		if (level !== 0 && headingType === HeadingType.none) throw new Error("Incorrect heading type");
 
 		this.heading = {
 			value: (headingType !== HeadingType.none) ? Section.formatHeading(lines[0]) : "",

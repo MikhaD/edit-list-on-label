@@ -3,6 +3,13 @@ author: MikhaD
 description: Add/remove issue titles to/from a list in your README when a label is added/removed.
 
 inputs:
+  # auth-token:
+  #   description: Github token to give the action permission to modify the repository (secrets.GITHUB_TOKEN)
+  #   required: true
+  files:
+    description: A comma seperated list of the relative paths to the files you want to modify, ./README.md by default
+    required: true
+    default: ./README.md
   label:
     description: The label you want the event to trigger on. The default is enhancement.
     required: true

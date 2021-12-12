@@ -1,191 +1,192 @@
-import { HeadingType } from "../src/types";
-import { isDashLine, isEqualsLine, isHashHeading, sectionMarkdown } from "../src/parseMarkdown";
-import Section from "../src/Section";
+import MDFile from "../src/MDFile";
+import { readFileSync } from "fs";
 
-test("Match hash heading", () => {
-	expect(isHashHeading("")).toBe(false);
-	expect(isHashHeading("#heading")).toBe(false);
-	expect(isHashHeading("head# ing")).toBe(false);
-	expect(isHashHeading(" heading")).toBe(false);
-	expect(isHashHeading("# heading")).toBe(true);
-	expect(isHashHeading("## heading")).toBe(true);
-	expect(isHashHeading("### heading")).toBe(true);
-	expect(isHashHeading("#### heading")).toBe(true);
-	expect(isHashHeading("##### heading")).toBe(true);
-	expect(isHashHeading("###### heading")).toBe(true);
-	expect(isHashHeading("####### heading")).toBe(false);
+jest.mock("fs", () => ({
+	readFileSync: jest.fn()
+}));
+const mockRFS = readFileSync as jest.Mock;
+mockRFS.mockReturnValue(Buffer.from([
+	"---",
+	"===",
+	"Heading",
+	"---",
+	"random text",
+	"filler text",
+	"# heading",
+	"+ a list",
+	"not another heading"
+].join("\n")));
+
+test("Non markdown file", () => {
+	expect(() => { new MDFile("./README"); }).toThrowError("./README is not a markdown file");
 });
 
-test("Match dash line", () => {
-	expect(isDashLine("")).toBe(false);
-	expect(isDashLine("hello")).toBe(false);
-	expect(isDashLine("---a-")).toBe(false);
-	expect(isDashLine("- ---")).toBe(false);
-	expect(isDashLine("--")).toBe(false);
-	expect(isDashLine("---")).toBe(true);
-	expect(isDashLine(" ---")).toBe(true);
-	expect(isDashLine("--- ")).toBe(true);
-	expect(isDashLine("-------- ")).toBe(true);
-	expect(isDashLine("  --------  ")).toBe(true);
-});
-
-test("Match equals line", () => {
-	expect(isEqualsLine("")).toBe(false);
-	expect(isEqualsLine("hello")).toBe(false);
-	expect(isEqualsLine("===a=")).toBe(false);
-	expect(isEqualsLine("= ===")).toBe(false);
-	expect(isEqualsLine("==")).toBe(false);
-	expect(isEqualsLine("===")).toBe(true);
-	expect(isEqualsLine(" ===")).toBe(true);
-	expect(isEqualsLine("=== ")).toBe(true);
-	expect(isEqualsLine("======== ")).toBe(true);
-	expect(isEqualsLine("  ========  ")).toBe(true);
-});
-
-test("No lines", () => {
-	expect(sectionMarkdown([])).toEqual(new Map<string, Section>());
-});
-
-describe("No headings", () => {
-	const text = [
-		"this is a section",
-		"of text without any",
-		"headings"
-	];
-	const data: [boolean, string[]][] = [[true, text], [false, text]];
-	test.each(data)("caseSensitive %s", (caseSensitive, text) => {
-		const output = sectionMarkdown(text, caseSensitive);
-		expect(output.size).toBe(1);
-		expect(output.get("")).toBeDefined();
-		expect(output.get("")?.lineCount()).toBe(3);
-		expect(output.get("")?.headingType).toBe(HeadingType.none);
-	});
-});
-
-describe("Hash heading first line", () => {
-	const text = [
-		"## Hash Heading",
-		"this is a section",
-		"of text with some",
-		"headings"
-	];
-	const data: [boolean, string[]][] = [[true, text], [false, text]];
-	test.each(data)("caseSensitive %s", (caseSensitive, text) => {
-		const output = sectionMarkdown(text, caseSensitive);
-		const heading = caseSensitive ? "Hash Heading" : "hash heading";
-		expect(output.size).toBe(1);
-		expect(output.get(heading)).toBeDefined();
-		expect(output.get(heading)?.lineCount()).toBe(3);
-		expect(output.get(heading)?.headingType).toBe(HeadingType.hash);
-	});
-});
-
-describe("Hash heading not first line", () => {
-	const text = [
-		"first line",
-		"## Hash Heading",
-		"this is a section",
-		"of text with some",
-		"headings"
-	];
-	const data: [boolean, string[]][] = [[true, text], [false, text]];
-	test.each(data)("caseSensitive %s", (caseSensitive, text) => {
-		const output = sectionMarkdown(text, caseSensitive);
-		const heading = caseSensitive ? "Hash Heading" : "hash heading";
-		expect(output.size).toBe(2);
-
-		expect(output.get("")).toBeDefined();
-		expect(output.get("")?.lineCount()).toBe(1);
-		expect(output.get("")?.headingType).toBe(HeadingType.none);
-
-		expect(output.get(heading)).toBeDefined();
-		expect(output.get(heading)?.lineCount()).toBe(3);
-		expect(output.get(heading)?.headingType).toBe(HeadingType.hash);
-	});
-});
-
-describe("Heading same as another", () => {
-	const text = [
-		"first line",
+test("No headings", () => {
+	mockRFS.mockReturnValueOnce(Buffer.from([
 		"Heading",
-		"----",
-		"some line content",
-		"## heading",
-		"this is a section",
-		"of text with some",
-		"headings"
-	];
-	test("caseSensitive true", () => {
-		const output = sectionMarkdown(text, true);
-		expect(output.size).toBe(3);
-		expect(output.get("Heading")).toBeDefined();
-		expect(output.get("Heading")?.lineCount()).toBe(1);
-		expect(output.get("Heading")?.headingType).toBe(HeadingType.underline);
+		"=-=",
+		"Some random",
+		" * list item",
+		"+  another",
+		"-  yet another",
+		"filler text",
+		"another",
+		"+  another list"
+	].join("\n")));
+	const file = new MDFile(".mArKdOwN");
 
-		expect(output.get("heading")).toBeDefined();
-		expect(output.get("heading")?.lineCount()).toBe(3);
-		expect(output.get("heading")?.headingType).toBe(HeadingType.hash);
+	expect(file.totalSections()).toBe(1);
+	expect(file.totalUniqueSections()).toBe(1);
+});
+
+describe("section method", () => {
+	test.each([[true, 3, 3], [false, 3, 2]])("Case sensitive %s", (caseSensitive, sects, uniqueSects) => {
+		const file = new MDFile(".mArKdOwN", caseSensitive);
+		expect(file.totalSections()).toBe(sects);
+		expect(file.totalUniqueSections()).toBe(uniqueSects);
 	});
+	test("Sections with same heading", () => {
+		mockRFS.mockReturnValueOnce(Buffer.from([
+			"Heading",
+			"===",
+			"Some random",
+			" * list item",
+			"+  another",
+			"-  yet another",
+			"filler text",
+			"Heading",
+			"-----",
+			"+  another list"
+		].join("\n")));
+		const file = new MDFile(".mArKdOwN");
+		expect(file.totalSections()).toBe(2);
+		expect(file.totalUniqueSections()).toBe(1);
 
-	test("caseSensitive false", () => {
-		const output = sectionMarkdown(text);
-		expect(output.size).toBe(2);
-		expect("heading").toBeDefined();
-		expect(output.get("heading")?.lineCount()).toBe(1);
-		expect(output.get("heading")?.headingType).toBe(HeadingType.underline);
-
-		expect(output.get("Heading")).toBeUndefined();
+		file.addToList("Heading", "listicus itemus");
+		expect(file.toString()).toBe([
+			"Heading",
+			"===",
+			"Some random",
+			" * list item",
+			"+  another",
+			"-  yet another",
+			"- listicus itemus",
+			"filler text",
+			"Heading",
+			"-----",
+			"+  another list"
+		].join("\n"));
 	});
 });
 
-for (const underline of ["----", "===="]) {
-	describe(`${underline} underline heading first two lines`, () => {
-		const text = [
-			"Underline Heading",
-			underline,
-			"this is a section",
-			"of text with some",
-			"headings"
-		];
-		const data: [boolean, string[]][] = [[true, text], [false, text]];
-		test.each(data)("caseSensitive %s", (caseSensitive, text) => {
-			const output = sectionMarkdown(text, caseSensitive);
-			const heading = caseSensitive ? "Underline Heading" : "underline heading";
-			expect(output.size).toBe(1);
-			expect(output.get(heading)).toBeDefined();
-			expect(output.get(heading)?.lineCount()).toBe(3);
-			expect(output.get(heading)?.headingType).toBe(HeadingType.underline);
-		});
-	});
-}
-
-describe("Multiple headings test", () => {
-	const data: [string, string, number][] = [
-		["Heading", "heading", 1],
-		["---", "", 3],
-		["===", "===", 1]
+describe("add to list method", () => {
+	const str1 = [
+		"---",
+		"===",
+		"Heading",
+		"---",
+		"random text",
+		"filler text",
+		"- da new list item",
+		"# heading",
+		"+ a list",
+		"not another heading"
 	];
-
-	test.each(data)("First line is %s", (firstLine, heading, lines) => {
-		const text = [
-			firstLine,
+	const str2 = [
+		"---",
+		"===",
+		"Heading",
+		"---",
+		"random text",
+		"filler text",
+		"# heading",
+		"+ a list",
+		"- da new list item",
+		"not another heading"
+	];
+	test.each([[true, str1], [false, str2]])("Case sensitive %s", (caseSensitive, str) => {
+		const file = new MDFile(".mArKdOwN", caseSensitive);
+		file.addToList("Heading", "da new list item");
+		expect(file.toString()).toBe(str.join("\n"));
+	});
+	test("Section not present", () => {
+		const file = new MDFile(".mArKdOwN");
+		file.addToList("---", "da new list item");
+		expect(file.toString()).toBe([
 			"---",
-			"this is an example",
-			"### Of two",
-			"Headings of",
 			"===",
-			"different types",
-			"without any",
-			"data in between",
-			"---"
-		];
-		const output = sectionMarkdown(text);
+			"Heading",
+			"---",
+			"random text",
+			"filler text",
+			"# heading",
+			"+ a list",
+			"not another heading",
+			"# ---",
+			"- da new list item"
+		].join("\n"));
+	});
+});
 
-		expect(output.get(heading)).toBeDefined();
-		expect(output.get(heading)?.lineCount()).toBe(lines);
+describe("remove from list method", () => {
+	const str1 = [
+		"---",
+		"===",
+		"Heading",
+		"---",
+		"random text",
+		"filler text",
+		"# heading",
+		"+ a list",
+		"not another heading"
+	];
+	const str2 = [
+		"---",
+		"===",
+		"Heading",
+		"---",
+		"random text",
+		"filler text",
+		"# heading",
+		"not another heading"
+	];
+	test.each([[true, 1, str1], [false, 0, str2]])("Case sensitive %s", (caseSensitive, res, str) => {
+		const file = new MDFile(".mArKdOwN", caseSensitive);
+		expect(file.removeFromList("not present", "a list")).toBe(1);
+		expect(file.removeFromList("Heading", "blonk")).toBe(1);
+		expect(file.removeFromList("Heading", "a list")).toBe(res);
+		expect(file.toString()).toBe(str.join("\n"));
+	});
+});
 
-		expect(output.get("of two")?.lineCount()).toBe(0);
-		expect(output.get("headings of")?.lineCount()).toBe(2);
-		expect(output.get("data in between")?.lineCount()).toBe(0);
+describe("edit list item method", () => {
+	const str1 = [
+		"---",
+		"===",
+		"Heading",
+		"---",
+		"random text",
+		"filler text",
+		"# heading",
+		"+ a list",
+		"not another heading"
+	];
+	const str2 = [
+		"---",
+		"===",
+		"Heading",
+		"---",
+		"random text",
+		"filler text",
+		"# heading",
+		"- the list",
+		"not another heading"
+	];
+	test.each([[true, 1, str1], [false, 0, str2]])("Case sensitive %s", (caseSensitive, res, str) => {
+		const file = new MDFile(".mArKdOwN", caseSensitive);
+		expect(file.editListItem("not present", "a list", "b list")).toBe(1);
+		expect(file.editListItem("Heading", "blonk", "plonk")).toBe(1);
+		expect(file.editListItem("Heading", "a list", "the list")).toBe(res);
+		expect(file.toString()).toBe(str.join("\n"));
 	});
 });

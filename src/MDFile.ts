@@ -4,6 +4,7 @@ import { HeadingType } from "./types";
 
 export default class MDFile {
 	public readonly caseSensitive;
+	public readonly path;
 
 	private sections: Section[] = [];
 	private sectionMap = new Map<string, Section>();
@@ -13,6 +14,7 @@ export default class MDFile {
 		if (!path.toLowerCase().endsWith(".md") && !path.toLowerCase().endsWith(".markdown")) {
 			throw new TypeError(`${path} is not a markdown file`);
 		}
+		this.path = path;
 		this.lines = readFileSync(path).toString().split("\n");
 		this.caseSensitive = caseSensitive;
 		this.section();
@@ -34,7 +36,6 @@ export default class MDFile {
 	}
 
 	private section() {
-		const sections = new Map<string, Section>();
 		let currentSection: string[] = [];
 		let currentHeadingType = HeadingType.none;
 		for (const line of this.lines) {
@@ -66,22 +67,31 @@ export default class MDFile {
 	}
 
 	addToList(section: string, item: string) {
+		if (!this.caseSensitive) section = section.toLowerCase();
 		if (!this.sectionMap.has(section)) {
-			const newSection = new Section([`# ${section}`], HeadingType.hash);
-			this.sectionMap.set(section, newSection);
-			this.sections.push(newSection);
+			this.insertSection(new Section([`# ${section}`], HeadingType.hash));
 		}
 		this.sectionMap.get(section)!.addToList(item);
 	}
 	removeFromList(section: string, item: string) {
+		if (!this.caseSensitive) section = section.toLowerCase();
 		if (!this.sectionMap.has(section)) return 1;
 		return this.sectionMap.get(section)!.removeFromList(item);
 	}
 	editListItem(section: string, oldItem: string, newItem: string) {
+		if (!this.caseSensitive) section = section.toLowerCase();
 		if (!this.sectionMap.has(section)) return 1;
 		return this.sectionMap.get(section)!.editListItem(oldItem, newItem);
 	}
 	toString() {
 		return this.sections.map(sect => sect.toString()).join("\n");
+	}
+	/** Return the number of unique sections in the file */
+	totalUniqueSections() {
+		return this.sectionMap.size;
+	}
+	/** Return the number of sections in the file */
+	totalSections() {
+		return this.sections.length;
 	}
 }

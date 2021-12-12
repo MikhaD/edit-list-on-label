@@ -2,7 +2,6 @@ import { HeadingType } from "../src/types";
 import Section from "../src/Section";
 
 describe("Match list item regex", () => {
-
 	test.each(["-", "*", "+"])("Match %s item", (symbol) => {
 		expect(`    ${symbol} No Match`).not.toMatch(Section.LIST_ITEM);
 		expect(`   ${symbol} Match`).toMatch(Section.LIST_ITEM);
@@ -19,184 +18,185 @@ describe("Match list item regex", () => {
 	});
 });
 
-test("Basic constructor", () => {
-	const section = new Section();
-	expect(section.getHeading()).toBe("");
-	expect(section.getHeading(false)).toBe("");
-	expect(section.headingType).toBe(HeadingType.none);
-	expect(section.lineCount()).toBe(0);
-	expect(section.lastLine()).toBe("");
-	expect(section.getText()).toEqual([]);
-	expect(() => { section.popLastLine() }).toThrowError("No last line to pop");
+test("Match hash heading regex", () => {
+	expect("").not.toMatch(Section.HASH_HEADING);
+	expect("#heading").not.toMatch(Section.HASH_HEADING);
+	expect("head# ing").not.toMatch(Section.HASH_HEADING);
+	expect(" heading").not.toMatch(Section.HASH_HEADING);
+	expect(" # heading").toMatch(Section.HASH_HEADING);
+	expect("## heading").toMatch(Section.HASH_HEADING);
+	expect("  ### heading").toMatch(Section.HASH_HEADING);
+	expect("####  heading").toMatch(Section.HASH_HEADING);
+	expect(" ##### heading").toMatch(Section.HASH_HEADING);
+	expect("######  heading").toMatch(Section.HASH_HEADING);
+	expect("####### heading").not.toMatch(Section.HASH_HEADING);
 });
 
-test("Simple section", () => {
-	const text = [
-		"# Heading",
-		"This is a section",
-		"of text with a",
-		"heading."
+test("Match dash line regex", () => {
+	expect("").not.toMatch(Section.DASH_LINE);
+	expect("hello").not.toMatch(Section.DASH_LINE);
+	expect("---a-").not.toMatch(Section.DASH_LINE);
+	expect("- ---").not.toMatch(Section.DASH_LINE);
+	expect("--").not.toMatch(Section.DASH_LINE);
+	expect("---").toMatch(Section.DASH_LINE);
+	expect(" ---").toMatch(Section.DASH_LINE);
+	expect("--- ").toMatch(Section.DASH_LINE);
+	expect("-------- ").toMatch(Section.DASH_LINE);
+	expect("  --------  ").toMatch(Section.DASH_LINE);
+});
+
+test("Match equals line regex", () => {
+	expect("").not.toMatch(Section.EQUALS_LINE);
+	expect("hello").not.toMatch(Section.EQUALS_LINE);
+	expect("===a=").not.toMatch(Section.EQUALS_LINE);
+	expect("= ===").not.toMatch(Section.EQUALS_LINE);
+	expect("==").not.toMatch(Section.EQUALS_LINE);
+	expect("===").toMatch(Section.EQUALS_LINE);
+	expect(" ===").toMatch(Section.EQUALS_LINE);
+	expect("=== ").toMatch(Section.EQUALS_LINE);
+	expect("======== ").toMatch(Section.EQUALS_LINE);
+	expect("  ========  ").toMatch(Section.EQUALS_LINE);
+});
+
+describe("Constructor", () => {
+	test("Zero lines", () => {
+		expect(() => { new Section([], HeadingType.none); }).toThrowError("Cannot create an empty, headingless section");
+		expect(() => { new Section([], HeadingType.underline); }).toThrowError("Cannot create an empty, headingless section");
+		expect(() => { new Section([], HeadingType.hash); }).toThrowError("Cannot create an empty, headingless section");
+	});
+	test("One line", () => {
+		expect(() => { new Section(["# Heading!"], HeadingType.underline); }).toThrowError("Cannot have underline heading with only one line");
+		expect(() => { new Section(["# Heading!"], HeadingType.none); }).toThrowError("Incorrect heading type");
+		expect((new Section(["# Heading!"], HeadingType.hash)).heading.value).toBe("Heading!");
+		expect((new Section(["Heading!"], HeadingType.none)).heading.value).toBe("");
+		expect(() => { new Section(["Heading!"], HeadingType.hash); }).toThrowError("Invalid heading");
+		expect(() => { new Section(["####### Heading!"], HeadingType.hash); }).toThrowError("Invalid heading");
+	});
+	test("Underline heading", () => {
+		expect(() => { new Section(["---", "==="], HeadingType.underline); }).toThrowError("Invalid heading");
+		expect(() => { new Section(["# Heading!", "---"], HeadingType.underline); }).toThrowError("Incorrect heading type");
+		expect(() => { new Section(["#Heading!", "---=-"], HeadingType.underline); }).toThrowError("Underline heading has missing or invalid underline");
+		expect((new Section(["#Heading!", "==="], HeadingType.underline)).heading.level).toBe(1);
+		expect((new Section(["#Heading!", "---"], HeadingType.underline)).heading.level).toBe(2);
+	});
+});
+
+test("Immutable lines", () => {
+	const lines = ["# Heading", "text"];
+	const section = new Section(lines, HeadingType.hash);
+	lines.push("new line");
+	expect(section.toString()).toBe("# Heading\ntext");
+});
+
+describe("addToList method", () => {
+	test("No lists", () => {
+		const lines = [
+			"# Heading",
+			"Some random",
+			"filler text"
+		];
+		const section = new Section(lines, HeadingType.hash);
+		section.addToList("I am a new list item");
+		lines.push("- I am a new list item");
+		expect(section.toString()).toBe(lines.join("\n"));
+	});
+	test("One list in middle of file", () => {
+		const lines = [
+			"# Heading",
+			"Some random",
+			" * list item",
+			"filler text"
+		];
+		const section = new Section(lines, HeadingType.hash);
+		section.addToList("I am a new list item");
+		expect(section.toString()).toBe([
+			"# Heading",
+			"Some random",
+			" * list item",
+			"- I am a new list item",
+			"filler text"
+		].join("\n"));
+	});
+	test("Multiple lists", () => {
+		const lines = [
+			"# Heading",
+			"Some random",
+			" * list item",
+			"filler text",
+			"+  another list"
+		];
+		const section = new Section(lines, HeadingType.hash);
+		section.addToList("I am a new list item");
+		lines.push("- I am a new list item");
+		expect(section.toString()).toBe(lines.join("\n"));
+	});
+});
+
+describe("removeFromList method", () => {
+	const lines = [
+		"Heading",
+		"===",
+		"Some random",
+		" * list item",
+		"+  another",
+		"-  yet another",
+		"filler text",
+		"another",
+		"+  another list"
 	];
-	const section = new Section("# Heading", HeadingType.hash);
-	for (const line of text) {
-		section.addLine(line);
-	}
-
-	expect(section.getHeading()).toBe("Heading");
-	expect(section.getHeading(false)).toBe("heading");
-	expect(section.headingType).toBe(HeadingType.hash);
-	expect(section.lineCount()).toBe(3);
-	expect(section.lastLine()).toBe("heading.");
-	expect(section.getText()).toEqual(text);
-	expect(section.popLastLine()).toBe("heading.");
-});
-
-describe("Add to list", () => {
-	test("No list", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading."
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		section.addToList("New Item!");
-		expect(section.lastLine()).toBe("- New Item!");
+	test("Not in list", () => {
+		const section = new Section(lines, HeadingType.underline);
+		expect(section.removeFromList("item")).toBe(1);
+		expect(section.removeFromList("+  another")).toBe(1);
+		expect(section.toString()).toBe(lines.join("\n"));
 	});
-	test("List in body", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading.",
-			"- New Item!",
-			"last line"
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		section.addToList("Should go in body");
-		console.log(section);
-		expect(section.getText()).toEqual([
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading.",
-			"- New Item!",
-			"- Should go in body",
-			"last line"
-		]);
-	});
-	test("Multiple lists in body", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"* first list",
-			"of text with a",
-			"heading.",
-			"* Second list",
-			"last line"
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		section.addToList("Should go in body");
-		console.log(section);
-		expect(section.getText()).toEqual([
-			"# Heading",
-			"This is a section",
-			"* first list",
-			"of text with a",
-			"heading.",
-			"* Second list",
-			"- Should go in body",
-			"last line"
-		]);
+	test("In list", () => {
+		const section = new Section(lines, HeadingType.underline);
+		expect(section.removeFromList("another")).toBe(0);
+		expect(section.toString()).toBe([
+			"Heading",
+			"===",
+			"Some random",
+			" * list item",
+			"-  yet another",
+			"filler text",
+			"another",
+			"+  another list"
+		].join("\n"));
 	});
 });
 
-describe("Remove from list", () => {
-	test("Not in section, no lists", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading."
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		expect(section.removeFromList("heading.")).toBe(1);
-		expect(section.getText()).toEqual(text);
+describe("editListItem method", () => {
+	const lines = [
+		"---",
+		"===",
+		"Some random",
+		" * list item",
+		"+  another",
+		"-  yet another",
+		"filler text",
+		"another",
+		"+  another list"
+	];
+	test("Not in list", () => {
+		const section = new Section(lines, HeadingType.none);
+		expect(section.editListItem("text", "new text")).toBe(1);
+		expect(section.editListItem(" * list item", "new text")).toBe(1);
+		expect(section.toString()).toBe(lines.join("\n"));
 	});
-	test("Not in section", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading.",
-			"- list item"
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		expect(section.removeFromList("heading.")).toBe(1);
-		expect(section.getText()).toEqual(text);
-	});
-	test("In last list", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading.",
-			"- list item",
-			"- second list item"
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		expect(section.removeFromList("list item")).toBe(0);
-		expect(section.getText()).toEqual([
-			"# Heading",
-			"This is a section",
-			"of text with a",
-			"heading.",
-			"- second list item"
-		]);
-	});
-	test("In multiple lists", () => {
-		const text = [
-			"# Heading",
-			"This is a section",
-			"+ list item",
-			"+ And another list item",
-			"of text with a",
-			"heading.",
-			"+ list item",
-			"+ second list item"
-		];
-		const section = new Section("# Heading", HeadingType.hash);
-		for (const line of text) {
-			section.addLine(line);
-		}
-		expect(section.removeFromList("list item")).toBe(0);
-		expect(section.getText()).toEqual([
-			"# Heading",
-			"This is a section",
-			"+ list item",
-			"+ And another list item",
-			"of text with a",
-			"heading.",
-			"+ second list item"
-		]);
+	test("In list", () => {
+		const section = new Section(lines, HeadingType.none);
+		expect(section.editListItem("another", "one more")).toBe(0);
+		expect(section.toString()).toBe([
+			"---",
+			"===",
+			"Some random",
+			" * list item",
+			"- one more",
+			"-  yet another",
+			"filler text",
+			"another",
+			"+  another list"
+		].join("\n"));
 	});
 });
-

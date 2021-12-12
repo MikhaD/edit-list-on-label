@@ -36,9 +36,6 @@
   "jest": {
     "preset": "ts-jest",
     "verbose": true,
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/*.ts"
-    ]
+    "collectCoverage": true
   }
 }
