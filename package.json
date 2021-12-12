@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.json",
-    "package": "npx ncc build src/index.ts --license licenses.txt",
+    "package": "npx ncc build src/index.ts --minify --license licenses.txt",
     "clean": "rm "
   },
   "repository": {

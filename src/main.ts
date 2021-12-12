@@ -18,7 +18,7 @@ export default function main() {
 	const files = splitFiles(getInput("files"));
 
 	const event = context.payload as IssuesEvent;
-	// If the issue event has nothing to do with a label
+	// If the issue event has nothing to do with the relevant label
 	if ((!event.issue.labels || !containsLabel(event.issue.labels, labelName)) &&
 		(!("label" in event) || event.label!.name !== labelName)) return info("Event not on labeled issue");
 
@@ -40,7 +40,7 @@ export default function main() {
 				return setFailed(`Failed to edit issue #${event.issue.number} in ${sectionName}`);
 			}
 		} else return info("Event type doesn't affect label");
-		MDFiles.map((file) => writeFileSync(file.path, file.toString()));
+		MDFiles.forEach((file) => writeFileSync(file.path, file.toString()));
 		initializeGit();
 		commitAndPush(files, `:zap: updated ${sectionName} section in ${files.join(", ")}`);
 	} catch (e) {
