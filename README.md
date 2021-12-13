@@ -70,6 +70,7 @@ If an issue with the specified label has its title edited the list item for that
 # Upcoming Features
 - (#3) Add option to specify format
 - (#4) Add option to specify commit message
+- (#5) Link to issue when $NUMBER is used in formats
 # License
 The scripts and documentation in this project are released under the [GNU General Public License v3.0](https://github.com/MikhaD/edit-list-on-label/blob/main/COPYING)<br>
 Authored and maintained by [MikhaD](https://github.com/MikhaD).
