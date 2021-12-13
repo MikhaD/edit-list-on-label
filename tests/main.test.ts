@@ -1,6 +1,6 @@
 import { getInput, setFailed, info } from "@actions/core";
 import { context } from "@actions/github";
-import { IssuesEvent } from "@octokit/webhooks-definitions/schema";
+import { IssuesEvent } from "@octokit/webhooks-types";
 import { writeFileSync } from "fs";
 import main from "../src/main";
 import MDFile from "../src/MDFile";
@@ -202,63 +202,65 @@ describe("Labeled issue title edited", () => {
 	};
 
 	for (const files in data) {
-		test(`title not edited, ${files}`, () => {
-			mockSplitF.mockImplementationOnce(() => data[files]);
-			(context as any).payload.action = "edited";
-			(context as any).payload.changes = {
-				body: {
-					from: "Who put that there?"
-				}
-			};
-			expect(main()).toBeUndefined();
-			expect(info).toBeCalledTimes(1);
-			expect(info).toBeCalledWith("Event type doesn't affect label");
-			expect(mockELI).not.toBeCalled();
-			expect(initializeGit).not.toBeCalled();
-		});
-		test(`title edited but not changed, ${files}`, () => {
-			mockSplitF.mockImplementationOnce(() => data[files]);
-			(context as any).payload.action = "edited";
-			(context as any).payload.changes = {
-				title: {
-					from: "Issue title"
-				}
-			};
-			expect(main()).toBeUndefined();
-			expect(info).toBeCalledTimes(1);
-			expect(info).toBeCalledWith("Event type doesn't affect label");
-			expect(mockELI).not.toBeCalled();
-			expect(initializeGit).not.toBeCalled();
-		});
-		test(`Failed to edit title, ${files}`, () => {
-			mockSplitF.mockImplementationOnce(() => data[files]);
-			mockELI.mockImplementationOnce(() => 1);
-			(context as any).payload.action = "edited";
-			(context as any).payload.changes = {
-				title: {
-					from: "Different issue title"
-				}
-			};
-			expect(main()).toBeUndefined();
-			expect(mockELI).toBeCalledTimes(1);
-			expect(setFailed).toBeCalledTimes(1);
-			expect(setFailed).toBeCalledWith("Failed to edit issue #42 in Upcoming Features");
-			expect(initializeGit).not.toBeCalled();
-			expect(commitAndPush).not.toBeCalled();
-		});
-		test(`title edited, ${files}`, () => {
-			mockSplitF.mockImplementationOnce(() => data[files]);
-			(context as any).payload.action = "edited";
-			(context as any).payload.changes = {
-				title: {
-					from: "Different issue title"
-				}
-			};
-			expect(main()).toBeUndefined();
-			expect(mockELI).toBeCalledTimes(data[files].length);
-			expect(writeFileSync).toBeCalledTimes(data[files].length);
-			expect(initializeGit).toBeCalledTimes(1);
-			expect(commitAndPush).toBeCalledTimes(1);
+		describe(files, () => {
+			test("title not edited", () => {
+				mockSplitF.mockImplementationOnce(() => data[files]);
+				(context as any).payload.action = "edited";
+				(context as any).payload.changes = {
+					body: {
+						from: "Who put that there?"
+					}
+				};
+				expect(main()).toBeUndefined();
+				expect(info).toBeCalledTimes(1);
+				expect(info).toBeCalledWith("Event type doesn't affect label");
+				expect(mockELI).not.toBeCalled();
+				expect(initializeGit).not.toBeCalled();
+			});
+			test("title edited but not changed", () => {
+				mockSplitF.mockImplementationOnce(() => data[files]);
+				(context as any).payload.action = "edited";
+				(context as any).payload.changes = {
+					title: {
+						from: "Issue title"
+					}
+				};
+				expect(main()).toBeUndefined();
+				expect(info).toBeCalledTimes(1);
+				expect(info).toBeCalledWith("Event type doesn't affect label");
+				expect(mockELI).not.toBeCalled();
+				expect(initializeGit).not.toBeCalled();
+			});
+			test("Failed to edit title", () => {
+				mockSplitF.mockImplementationOnce(() => data[files]);
+				mockELI.mockImplementationOnce(() => 1);
+				(context as any).payload.action = "edited";
+				(context as any).payload.changes = {
+					title: {
+						from: "Different issue title"
+					}
+				};
+				expect(main()).toBeUndefined();
+				expect(mockELI).toBeCalledTimes(1);
+				expect(setFailed).toBeCalledTimes(1);
+				expect(setFailed).toBeCalledWith("Failed to edit issue #42 in Upcoming Features");
+				expect(initializeGit).not.toBeCalled();
+				expect(commitAndPush).not.toBeCalled();
+			});
+			test("title edited", () => {
+				mockSplitF.mockImplementationOnce(() => data[files]);
+				(context as any).payload.action = "edited";
+				(context as any).payload.changes = {
+					title: {
+						from: "Different issue title"
+					}
+				};
+				expect(main()).toBeUndefined();
+				expect(mockELI).toBeCalledTimes(data[files].length);
+				expect(writeFileSync).toBeCalledTimes(data[files].length);
+				expect(initializeGit).toBeCalledTimes(1);
+				expect(commitAndPush).toBeCalledTimes(1);
+			});
 		});
 	}
 });

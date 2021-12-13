@@ -1,6 +1,6 @@
 {
   "name": "edit-readme",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A GitHub action to edit a repositories README file.",
   "main": "dist/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "@octokit/webhooks-definitions": "^3.67.3"
+    "@octokit/webhooks-types": "^4.17.1"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",

@@ -1,9 +1,8 @@
-import { Label } from "@octokit/webhooks-definitions/schema";
+import { Label } from "@octokit/webhooks-types/schema";
 import { execSync } from "child_process";
 
 /** Match a valid email address */
 export const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/m;
-
 /**
  * Split a string containing a list of comma seperated values and return a list
  * @param list A string of one or more comma seperated valuese
@@ -11,7 +10,6 @@ export const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/m;
 export function splitFiles(list: string) {
 	return list.split(/\s*,\s*/);
 }
-
 /**
  * Search though an array of labels and return true if one or more of the labels has the given name value
  * @param labels The array of labels
@@ -25,7 +23,6 @@ export function containsLabel(labels: Label[], labelName: string) {
 	}
 	return false;
 }
-
 /**
  * Initialize git to commit by setting user.email and user.name
  * @param email default: `action@github.com`
@@ -36,7 +33,6 @@ export function initializeGit(email = "action@github.com", name = "actions-user"
 	execSync(`git config --global user.email ${email}`);
 	execSync(`git config --global user.name ${name}`);
 }
-
 /**
  * Add, commit and push a list of files with the given message
  * @param files The list of files to push

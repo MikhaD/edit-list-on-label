@@ -1,10 +1,11 @@
 import { getInput, setFailed, info } from "@actions/core";
 import { context } from "@actions/github";
-import { IssuesEvent } from "@octokit/webhooks-definitions/schema";
+import { IssuesEvent } from "@octokit/webhooks-types";
 import { writeFileSync } from "fs";
 import MDFile from "./MDFile";
 import { containsLabel, commitAndPush, splitFiles, initializeGit } from "./utils";
 
+/** The main function, executed in index.ts, exported to make it testable */
 export default function main() {
 	if (context.eventName !== "issues") return setFailed("Action should only be triggered on issues event");
 
@@ -14,7 +15,6 @@ export default function main() {
 	})();
 	const sectionName = caseSensitive ? getInput("heading") : getInput("heading").toLowerCase();
 	const labelName = getInput("label");
-	// const authToken = getInput("auth-token");
 	const files = splitFiles(getInput("files"));
 
 	const event = context.payload as IssuesEvent;

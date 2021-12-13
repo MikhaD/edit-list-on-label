@@ -1,4 +1,4 @@
-import { Label } from "@octokit/webhooks-definitions/schema";
+import { Label } from "@octokit/webhooks-types/schema";
 import { execSync } from "child_process";
 import { containsLabel, splitFiles, initializeGit, commitAndPush, EMAIL_REGEX } from "../src/utils";
 
