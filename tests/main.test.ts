@@ -25,7 +25,28 @@ jest.mock("@actions/core", () => ({
 /** Mock of `getInput()` */
 const mockGI = getInput as jest.Mock;
 
-jest.mock("@actions/github");
+jest.mock("@actions/github", () => ({
+	context: {
+		eventName: "issues",
+		payload: {
+			action: "labeled",
+			issue: {
+				number: 42,
+				title: "Issue title",
+				labels: [
+					{ name: "bug" },
+					{ name: "enhancement" },
+					{ name: "question" }
+				]
+			},
+			label: {
+				// Only here for "labeled" & "unlabeled" 
+				name: "enhancement"
+			}
+		} as IssuesEvent
+	}
+}));
+const mockContext = JSON.parse(JSON.stringify(context));
 
 jest.mock("../src/utils", () => ({
 	containsLabel: jest.fn(() => false),
@@ -57,26 +78,6 @@ const mockMDFile = MDFile as jest.MockedClass<typeof MDFile>;
 jest.mock("fs", () => ({
 	writeFileSync: jest.fn()
 }));
-
-const mockContext = {
-	eventName: "issues",
-	payload: {
-		action: "labeled",
-		issue: {
-			number: 42,
-			title: "Issue title",
-			labels: [
-				{ name: "bug" },
-				{ name: "enhancement" },
-				{ name: "question" }
-			]
-		},
-		label: {
-			// Only here for "labeled" & "unlabeled" 
-			name: "enhancement"
-		}
-	} as IssuesEvent
-};
 
 beforeEach(() => {
 	jest.clearAllMocks();
