@@ -72,7 +72,6 @@ If an issue with the specified label has its title edited the list item for that
 - (#4) Add option to specify commit message
 - (#5) Link to issue when $NUMBER variable is used in formats
 - (#6) Option to only edit files that are present, or create files, instead of failing
-- (#6) Option to only edit files that are present, or create files, instead of failing
 # License
 The scripts and documentation in this project are released under the [GNU General Public License v3.0](https://github.com/MikhaD/edit-list-on-label/blob/main/COPYING)<br>
 Authored and maintained by [MikhaD](https://github.com/MikhaD).
