@@ -68,6 +68,7 @@ If an issue with the specified label has its title edited the list item for that
 </details>
 
 # Upcoming Features
+- (#3) Add option to specify format
 # License
 The scripts and documentation in this project are released under the [GNU General Public License v3.0](https://github.com/MikhaD/edit-list-on-label/blob/main/COPYING)<br>
 Authored and maintained by [MikhaD](https://github.com/MikhaD).
